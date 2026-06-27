@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -275,7 +274,7 @@ function HomeContent() {
             onClick={() => {
               const targetGroupId = folderToast.groupId;
               dismissFolderToast();
-              router.push(`/group/${targetGroupId}?range=${range}`);
+              router.push(`/group?id=${targetGroupId}&range=${range}`);
             }}
             className="shrink-0 rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
           >

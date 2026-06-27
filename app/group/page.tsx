@@ -1,8 +1,7 @@
 "use client";
-export const dynamic = "force-dynamic";
 
 import { Suspense, useEffect, useState, useRef } from "react";
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Plus, GripVertical, Pencil, Trash2, FileText } from "lucide-react";
 import {
   DndContext, closestCenter, PointerSensor, useSensor, useSensors,
@@ -432,11 +431,11 @@ function PageLoading() {
 
 // ── 메인 페이지 ────────────────────────────────────────────
 function GroupDetailContent() {
-  const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
 
+  const id = searchParams.get("id") ?? "";
   const rangeParam = (searchParams.get("range") ?? "1d") as ChartRange;
   const [range, setRange] = useState<ChartRange>(rangeParam);
 
@@ -502,7 +501,7 @@ function GroupDetailContent() {
 
   const handleRangeChange = (r: ChartRange) => {
     setRange(r);
-    router.replace(`/group/${id}?range=${r}`);
+    router.replace(`/group?id=${id}&range=${r}`);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -723,7 +722,7 @@ function GroupDetailContent() {
               onClick={() => {
                 const targetGroupId = moveToast.targetGroupId;
                 dismissMoveToast();
-                router.push(`/group/${targetGroupId}?range=${range}`);
+                router.push(`/group?id=${targetGroupId}&range=${range}`);
               }}
               className="rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
             >

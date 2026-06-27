@@ -61,7 +61,7 @@ export default function GroupCard({ group, stocks, quotes, sparklines, range, us
   return (
     <div
       className="flex flex-col rounded-2xl border border-zinc-100 bg-white shadow-sm cursor-pointer hover:shadow-md transition-shadow dark:border-zinc-800 dark:bg-zinc-900"
-      onClick={() => !editing && router.push(`/group/${group.id}?range=${range}`)}
+      onClick={() => !editing && router.push(`/group?id=${group.id}&range=${range}`)}
     >
       {/* 카드 헤더 */}
       <div className="flex items-center justify-between rounded-t-2xl border-b border-zinc-100 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
