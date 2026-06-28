@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2 } from "lucide-react";
-import { deleteGroup, renameGroup } from "@/lib/firestore";
+import { renameGroup } from "@/lib/firestore";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import TrendIcon from "@/components/TrendIcon";
 import type { Group, Stock, StockQuote } from "@/types";
@@ -14,10 +14,10 @@ interface Props {
   quotes: Record<string, StockQuote>;
   sparklines: Record<string, number[]>;
   range: ChartRange;
-  userId: string;
+  onDeleteGroup: (group: Group, stocks: Stock[]) => Promise<void>;
 }
 
-export default function GroupCard({ group, stocks, quotes, sparklines, range, userId }: Props) {
+export default function GroupCard({ group, stocks, quotes, sparklines, range, onDeleteGroup }: Props) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(group.name);
@@ -142,7 +142,7 @@ export default function GroupCard({ group, stocks, quotes, sparklines, range, us
         onCancel={() => setShowDeleteConfirm(false)}
         onConfirm={async () => {
           setShowDeleteConfirm(false);
-          await deleteGroup(group.id, userId);
+          await onDeleteGroup(group, stocks);
         }}
       />
     </div>

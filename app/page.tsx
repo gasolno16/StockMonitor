@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Plus, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useStockData } from "@/hooks/useStockData";
-import { subscribeGroups, subscribeStocks } from "@/lib/firestore";
+import { deleteGroup, restoreGroup, subscribeGroups, subscribeStocks } from "@/lib/firestore";
 import GroupCard from "@/components/GroupCard";
 import CreateGroupModal from "@/components/CreateGroupModal";
 import AddStockModal from "@/components/AddStockModal";
@@ -23,6 +23,9 @@ const RANGES: { label: string; value: ChartRange }[] = [
 type FolderToast = {
   groupId: string;
   message: string;
+  action?: "move" | "undo-delete";
+  deletedGroup?: Group;
+  deletedStocks?: Stock[];
 };
 
 function PageLoading() {
@@ -91,13 +94,38 @@ function HomeContent() {
 
   const showFolderToast = (groupId: string, message: string) => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    setFolderToast({ groupId, message });
+    setFolderToast({ groupId, message, action: "move" });
+    toastTimerRef.current = setTimeout(() => setFolderToast(null), 7000);
+  };
+
+  const showDeleteToast = (deletedGroup: Group, deletedStocks: Stock[]) => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    setFolderToast({
+      groupId: deletedGroup.id,
+      message: `"${deletedGroup.name}" 폴더를 삭제했습니다.`,
+      action: "undo-delete",
+      deletedGroup,
+      deletedStocks,
+    });
     toastTimerRef.current = setTimeout(() => setFolderToast(null), 7000);
   };
 
   const dismissFolderToast = () => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     setFolderToast(null);
+  };
+
+  const handleDeleteGroup = async (group: Group, groupStocks: Stock[]) => {
+    if (!user) return;
+    await deleteGroup(group.id, user.uid);
+    showDeleteToast(group, groupStocks);
+  };
+
+  const handleUndoDeleteGroup = async () => {
+    if (!folderToast?.deletedGroup || !folderToast.deletedStocks) return;
+    const { deletedGroup, deletedStocks } = folderToast;
+    dismissFolderToast();
+    await restoreGroup(deletedGroup, deletedStocks);
   };
 
   if (loading) {
@@ -238,7 +266,7 @@ function HomeContent() {
                 quotes={quotes}
                 sparklines={sparklines}
                 range={range}
-                userId={user.uid}
+                onDeleteGroup={handleDeleteGroup}
               />
             ))}
           </div>
@@ -270,16 +298,25 @@ function HomeContent() {
           <p className="min-w-0 flex-1 truncate text-zinc-700 dark:text-zinc-200">
             {folderToast.message}
           </p>
-          <button
-            onClick={() => {
-              const targetGroupId = folderToast.groupId;
-              dismissFolderToast();
-              router.push(`/group?id=${targetGroupId}&range=${range}`);
-            }}
-            className="shrink-0 rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-          >
-            폴더로 이동
-          </button>
+          {folderToast.action === "undo-delete" ? (
+            <button
+              onClick={handleUndoDeleteGroup}
+              className="shrink-0 rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            >
+              실행취소
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                const targetGroupId = folderToast.groupId;
+                dismissFolderToast();
+                router.push(`/group?id=${targetGroupId}&range=${range}`);
+              }}
+              className="shrink-0 rounded-lg bg-zinc-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            >
+              폴더로 이동
+            </button>
+          )}
         </div>
       )}
     </div>

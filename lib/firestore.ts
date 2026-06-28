@@ -39,6 +39,18 @@ export async function deleteGroup(groupId: string, userId: string) {
   return batch.commit();
 }
 
+export async function restoreGroup(group: Group, stocks: Stock[]) {
+  const db = getFirebaseDb();
+  const batch = writeBatch(db);
+  const { id: groupId, ...groupData } = group;
+  batch.set(doc(db, "groups", groupId), groupData);
+  stocks.forEach((stock) => {
+    const { id: stockId, ...stockData } = stock;
+    batch.set(doc(db, "stocks", stockId), stockData);
+  });
+  return batch.commit();
+}
+
 // ── Stocks ────────────────────────────────────────────────
 export function subscribeStocks(userId: string, cb: (stocks: Stock[]) => void) {
   const db = getFirebaseDb();
