@@ -110,7 +110,7 @@ function MoveMenu({
 
 // ── 드래그 가능한 종목 행 ──────────────────────────────────
 function SortableStockRow({
-  stock, quotes, quoteLoading, sparklines, sparkLoading, range, periodLabel,
+  stock, quotes, quoteLoading, sparklines, sparkLoading, range,
   groups, currentGroupId, allStocks, onDelete, onMove,
 }: {
   stock: Stock;
@@ -119,7 +119,6 @@ function SortableStockRow({
   sparklines: Record<string, SparklineData>;
   sparkLoading: boolean;
   range: ChartRange;
-  periodLabel: string;
   groups: Group[];
   currentGroupId: string;
   allStocks: Stock[];
@@ -266,7 +265,6 @@ function SortableStockRow({
               <p className={`flex items-baseline justify-end gap-0 text-md font-bold font-medium ${isUp ? "text-red-500" : "text-blue-500"}`}>
                 <TrendIcon direction={isUp ? "up" : "down"} className="mr-1 h-2.5 w-2.5"/>
                  <span className="font-bold">{Math.abs(displayPct).toFixed(2)}%</span>
-                <span className="ml-0.0 text-[15px] text-black">({periodLabel})</span>
               </p>
             )}
             {displayChange !== null && (
@@ -562,8 +560,6 @@ function GroupDetailContent() {
     setEditingGroupName(false);
   };
 
-  const periodLabel = range === "1d" ? "D" : range === "7d" ? "W" : "M";
-
   return (
     <div className="min-h-screen overflow-x-hidden bg-zinc-50 dark:bg-zinc-950">
       <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/80">
@@ -668,7 +664,6 @@ function GroupDetailContent() {
                     sparklines={sparklines}
                     sparkLoading={sparkLoading}
                     range={range}
-                    periodLabel={periodLabel}
                     groups={groups}
                     currentGroupId={id}
                     allStocks={allStocks}

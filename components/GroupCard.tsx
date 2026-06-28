@@ -22,7 +22,6 @@ export default function GroupCard({ group, stocks, quotes, sparklines, range, us
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(group.name);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const periodLabel = range === "1d" ? "D" : range === "7d" ? "W" : "M";
 
   // range에 따라 등락률·금액 계산
   const stocksWithData = stocks.filter((s) => {
@@ -107,7 +106,6 @@ export default function GroupCard({ group, stocks, quotes, sparklines, range, us
                 <p className={`flex items-baseline gap-1 text-3xl font-bold tracking-tight ${isUp ? "text-red-500" : "text-blue-500"}`}>
                   <TrendIcon direction={isUp ? "up" : "down"} className="h-6 w-6" />
                   <span>{Math.abs(avgPct).toFixed(2)}%</span>
-                  <span className="ml-1.0 text-xl font-medium text-black">({periodLabel})</span>
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1 text-xs font-semibold self-center leading-none">
