@@ -89,7 +89,9 @@ function HomeContent() {
 
   const handleRangeChange = (r: ChartRange) => {
     setRange(r);
-    router.replace(`/?range=${r}`);
+    const params = new URLSearchParams(window.location.search);
+    params.set("range", r);
+    window.history.replaceState(null, "", `/?${params.toString()}`);
   };
 
   const showFolderToast = (groupId: string, message: string) => {

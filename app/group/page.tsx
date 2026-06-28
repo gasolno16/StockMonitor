@@ -500,7 +500,10 @@ function GroupDetailContent() {
 
   const handleRangeChange = (r: ChartRange) => {
     setRange(r);
-    router.replace(`/group?id=${id}&range=${r}`);
+    const params = new URLSearchParams(window.location.search);
+    params.set("id", id);
+    params.set("range", r);
+    window.history.replaceState(null, "", `/group?${params.toString()}`);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
