@@ -142,6 +142,7 @@ async function fetchTwelveData(symbol) {
 
 // ── 종목 검색 ─────────────────────────────────────────────────────
 const KR_EXCHANGES = new Set(['KSC', 'KSQ', 'KOE', 'KPQ']);
+const SUPPORTED_US_QUOTE_TYPES = new Set(['EQUITY', 'ETF']);
 
 async function searchKR(q) {
   try {
@@ -193,7 +194,7 @@ async function searchUS(q) {
   if (!res.ok) throw new Error(`Yahoo search ${res.status}`);
   const d = await res.json();
   return (d?.quotes ?? [])
-    .filter(item => item.quoteType === 'EQUITY' && !item.symbol.includes('.'))
+    .filter(item => SUPPORTED_US_QUOTE_TYPES.has(item.quoteType) && !item.symbol.includes('.'))
     .slice(0, 8)
     .map(item => ({
       symbol: item.symbol,
