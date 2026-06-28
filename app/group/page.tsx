@@ -228,6 +228,7 @@ function SortableStockRow({
 
       {/* 종목명 */}
       <div className="min-w-0 select-none" {...longPressHandlers}>
+        <p className="text-xs font-semibold text-zinc-400 dark:text-zinc-500">{stock.symbol}</p>
         <p className="truncate text-lg font-bold text-zinc-800 dark:text-zinc-100">{stock.name}</p>
         <p
           className={`mt-1 w-full overflow-hidden break-words pr-2 text-xs leading-5 ${stock.memo?.trim() ? "text-zinc-500" : "text-zinc-300"}`}
